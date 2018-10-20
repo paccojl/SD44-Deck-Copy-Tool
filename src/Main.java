@@ -63,7 +63,7 @@ public class Main {
         frame.setLocation(100, 300);
         frame.setLayout(new GridLayout());
         frame.add(new JScrollPane(replaysTable));
-        frame.add(detailsPanel);
+        frame.add(new JScrollPane(detailsPanel));
         frame.setVisible(true);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     }

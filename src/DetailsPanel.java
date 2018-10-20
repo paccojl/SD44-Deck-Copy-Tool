@@ -1,5 +1,7 @@
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.border.LineBorder;
+import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
@@ -40,12 +42,23 @@ public class DetailsPanel extends JPanel {
         label.setAlignmentX(Component.LEFT_ALIGNMENT);
         add(label);
 
+        JPanel teamonePane = new JPanel();
+        teamonePane.setBorder(new TitledBorder("Team One"));
+        teamonePane.setLayout(new BoxLayout(teamonePane,BoxLayout.PAGE_AXIS));
+        JPanel teamtwoPane = new JPanel();
+        teamtwoPane.setBorder(new TitledBorder("Team Two"));
+        teamtwoPane.setLayout(new BoxLayout(teamtwoPane,BoxLayout.PAGE_AXIS));
+        add(teamonePane);
+        add(teamtwoPane);
+
         for(Player pl : details.players){
-            JPanel playerPanel = new JPanel(new FlowLayout(FlowLayout.LEADING));
+            JPanel playerPanel = new JPanel();
+            playerPanel.setLayout(new BoxLayout(playerPanel, BoxLayout.LINE_AXIS));
             playerPanel.setSize(getWidth(),15);
 
 
             JButton button = new JButton("Copy deck to clipboard");
+            button.setToolTipText(pl.deck);
             button.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
@@ -63,25 +76,31 @@ public class DetailsPanel extends JPanel {
 
 
             playerPanel.add(new JLabel(pl.nickname));
+
+            playerPanel.add(Box.createHorizontalGlue());
             try {
                 if(details.ver >= 93911){
                     URL image = getClass().getResource("/res/"+ pl.division.toString() +".png");
-                    playerPanel.add(new JLabel(new ImageIcon(ImageIO.read(image))));
+                    JLabel divIcon = new JLabel(new ImageIcon(ImageIO.read(image)));
+                    divIcon.setToolTipText(pl.division.toString());
+                    playerPanel.add(divIcon);
                 }
             } catch (Exception ex){
                 ex.printStackTrace();
 
             }
-
-
+            playerPanel.add(Box.createRigidArea(new Dimension(10,10)));
             playerPanel.add(button);
             playerPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-            add(playerPanel);
-
-            revalidate();
-
+            if(pl.side == 0){
+                teamonePane.add(playerPanel);
+            } else {
+                teamtwoPane.add(playerPanel);
+            }
 
         }
+        revalidate();
+
     }
 }

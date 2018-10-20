@@ -18,10 +18,10 @@ public class Parser {
         FileReader reader = new FileReader(replay);
         BufferedReader buff = new BufferedReader(reader,5000);
         String str="";
-
         while (!str.contains("{\"game\":{\""))
             str = buff.readLine();
         str = str.substring(str.indexOf("{\"game\":{\""),str.indexOf("}}")+2);
+        reader.close();
 
         JSONObject full = (JSONObject) new JSONParser().parse(str);
         JSONObject game = (JSONObject) full.get("game");
