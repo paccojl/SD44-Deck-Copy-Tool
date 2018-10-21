@@ -1,6 +1,5 @@
 import javax.imageio.ImageIO;
 import javax.swing.*;
-import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.datatransfer.StringSelection;
@@ -21,10 +20,6 @@ public class DetailsPanel extends JPanel {
         removeAll();
         repaint();
 
-        if(details.ver < 93911)
-        {
-            add(new JLabel("Unsupported version: division icons cannot be shown"));
-        }
         add(new JLabel("ver: "+ details.ver));
 
         if(details.gamemode >=3)
@@ -71,7 +66,13 @@ public class DetailsPanel extends JPanel {
             String deckString ;
             deckString = String.format("%8s",Integer.toBinaryString(deckByte[0] & 0XFF)).replace(' ','0');
             deckString += String.format("%8s",Integer.toBinaryString(deckByte[1] & 0XFF)).replace(' ','0');
-            pl.division = Integer.parseInt(deckString.substring(0,10),2);
+            if(pl.deck.charAt(0) == '*'){
+                pl.division = Integer.parseInt(deckString.substring(0,10),2);
+            } else
+            {
+                pl.division = Integer.parseInt(deckString.substring(0,8),2);
+            }
+
 
 
 
@@ -79,12 +80,10 @@ public class DetailsPanel extends JPanel {
 
             playerPanel.add(Box.createHorizontalGlue());
             try {
-                if(details.ver >= 93911){
-                    URL image = getClass().getResource("/res/"+ pl.division.toString() +".png");
-                    JLabel divIcon = new JLabel(new ImageIcon(ImageIO.read(image)));
-                    divIcon.setToolTipText(pl.division.toString());
-                    playerPanel.add(divIcon);
-                }
+                URL image = getClass().getResource("/res/"+ pl.division.toString() +".png");
+                JLabel divIcon = new JLabel(new ImageIcon(ImageIO.read(image)));
+                divIcon.setToolTipText(pl.division.toString());
+                playerPanel.add(divIcon);
             } catch (Exception ex){
                 ex.printStackTrace();
 
