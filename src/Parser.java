@@ -2,10 +2,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.Collections;
 import java.util.LinkedList;
 
@@ -15,13 +12,17 @@ public class Parser {
     public static Details Parse(File replay) throws ParseException,IOException {
 
         Details returnDetails = new Details();
-        FileReader reader = new FileReader(replay);
-        BufferedReader buff = new BufferedReader(reader,5000);
+        BufferedReader buff = new BufferedReader(new InputStreamReader(new FileInputStream(replay),"UTF8"),5000);
         String str="";
-        while (!str.contains("{\"game\":{\""))
-            str = buff.readLine();
-        str = str.substring(str.indexOf("{\"game\":{\""),str.indexOf("}}")+2);
-        reader.close();
+        try {
+            while (!str.contains("{\"game\":{\""))
+                str = buff.readLine();
+            str = str.substring(str.indexOf("{\"game\":{\""),str.indexOf("}}")+2);
+        } catch (IOException e){
+            throw e;
+        } finally {
+            buff.close();
+        }
 
         JSONObject full = (JSONObject) new JSONParser().parse(str);
         JSONObject game = (JSONObject) full.get("game");
