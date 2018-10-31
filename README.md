@@ -2,11 +2,9 @@
 
 
 
-Tool for easy and fast access to decks from replays.
+Tool for easy and fast access to decks from replay files for Steel Division: Normandy 44.
 
 ![](demo.gif)
-
-Seraches for Steel Division 44: Normandy replay files on your computer and parsing them.
 
 No instalation required: just download lastest release jar(or build your own from sources) and run it from anywhere.
 
