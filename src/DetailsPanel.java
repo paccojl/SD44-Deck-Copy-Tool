@@ -36,6 +36,15 @@ public class DetailsPanel extends JPanel {
         label = new JLabel("Mode: "+ details.gamemode );
         label.setAlignmentX(Component.LEFT_ALIGNMENT);
         add(label);
+        label = new JLabel("Victory: " + details.victory);
+        label.setAlignmentX(Component.LEFT_ALIGNMENT);
+        add(label);
+        label = new JLabel("Duration: " + details.duration);
+        label.setAlignmentX(LEFT_ALIGNMENT);
+        add(label);
+        label = new JLabel("Score: " + details.score);
+        label.setAlignmentX(LEFT_ALIGNMENT);
+        add(label);
 
         JPanel teamonePane = new JPanel();
         teamonePane.setBorder(new TitledBorder("Team One"));
@@ -81,9 +90,13 @@ public class DetailsPanel extends JPanel {
             playerPanel.add(Box.createHorizontalGlue());
             try {
                 URL image = getClass().getResource("/res/"+ pl.division.toString() +".png");
-                JLabel divIcon = new JLabel(new ImageIcon(ImageIO.read(image)));
-                divIcon.setToolTipText(pl.division.toString());
-                playerPanel.add(divIcon);
+                if(image != null) {
+                    JLabel divIcon = new JLabel(new ImageIcon(ImageIO.read(image)));
+                    divIcon.setToolTipText(pl.division.toString());
+                    playerPanel.add(divIcon);
+                } else {
+                    playerPanel.add(new JLabel());
+                }
             } catch (Exception ex){
                 ex.printStackTrace();
 

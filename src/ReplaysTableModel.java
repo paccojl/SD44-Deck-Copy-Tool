@@ -28,7 +28,7 @@ public class ReplaysTableModel extends DefaultTableModel {
      */
     public void fill (File steamHome) throws Exception{
 
-        String path = System.getProperty("user.home") + "\\Saved Games\\EugenSystems\\SteelDivision";
+        String path = System.getProperty("user.home") + "\\Saved Games\\EugenSystems\\SteelDivision2";
         File localReplayFolder = new File(path);
 
         //Scan "local" replays
@@ -53,7 +53,7 @@ public class ReplaysTableModel extends DefaultTableModel {
             for (File cloudReplayFolder : userDataFolder.listFiles()) {
                 if(cloudReplayFolder.isDirectory()){
 
-                    cloudReplayFolder = new File(cloudReplayFolder,"572410\\remote");
+                    cloudReplayFolder = new File(cloudReplayFolder,"1036860\\remote");
                     if(cloudReplayFolder.isDirectory() && cloudReplayFolder.exists()){
                         for (File replay: cloudReplayFolder.listFiles()) {
                             if(replay.isFile() && replay.canRead() && replay.getName().contains(".rpl3"))

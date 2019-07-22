@@ -6,5 +6,9 @@ public class Details {
     Integer maxPlayers;
     Integer ver;
 
+    String duration;
+    Integer victory;
+    Integer score;
+
     LinkedList<Player> players;
 }

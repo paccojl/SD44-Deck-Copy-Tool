@@ -13,19 +13,27 @@ public class Parser {
 
         Details returnDetails = new Details();
         BufferedReader buff = new BufferedReader(new InputStreamReader(new FileInputStream(replay),"UTF8"),5000);
+        String firstBlock;
+        String secondBlock;
         String str="";
         try {
             while (!str.contains("{\"game\":{\""))
                 str = buff.readLine();
-            str = str.substring(str.indexOf("{\"game\":{\""),str.indexOf("}}")+2);
+            firstBlock = str.substring(str.indexOf("{\"game\":{\""),str.indexOf("}}")+2);
+            while (!str.contains("{\"result\":"))
+                str = buff.readLine();
+            secondBlock = str.substring(str.indexOf("{\"result\":{"),str.indexOf("}}")+2);
         } catch (IOException e){
             throw e;
         } finally {
             buff.close();
         }
 
-        JSONObject full = (JSONObject) new JSONParser().parse(str);
+        JSONObject full = (JSONObject) new JSONParser().parse(firstBlock);
         JSONObject game = (JSONObject) full.get("game");
+
+        JSONObject result = (JSONObject) new JSONParser().parse(secondBlock);
+        result = (JSONObject) result.get("result");
 
         if(game.containsKey("Map")){
             returnDetails.mapname = (String) game.get("Map");
@@ -56,6 +64,19 @@ public class Parser {
                 returnDetails.players.add(pl);
             }
         }
+
+        if(result.containsKey("Score")){
+            returnDetails.score = Integer.parseInt((String) result.get("Score"));
+        }
+        if(result.containsKey("Duration")) {
+            int time = Integer.parseInt((String) result.get("Duration"));
+            returnDetails.duration = String.format("%02d:%02d:%02d",(time/3600), ((time%3600) / 60), (time % 60));
+        }
+        if(result.containsKey("Victory")){
+            returnDetails.victory = Integer.parseInt((String) result.get("Victory"));
+        }
+
+
 
         Collections.sort(returnDetails.players);
         return returnDetails;
