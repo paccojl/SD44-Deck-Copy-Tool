@@ -50,19 +50,15 @@ public class ReplaysTableModel extends DefaultTableModel {
         //iterate every steam user(usually one user)
         if(userDataFolder.exists() && userDataFolder.isDirectory())
         {
-            for (File cloudReplayFolder : userDataFolder.listFiles()) {
-                if(cloudReplayFolder.isDirectory()){
-
-                    cloudReplayFolder = new File(cloudReplayFolder,"1036860\\remote");
-                    if(cloudReplayFolder.isDirectory() && cloudReplayFolder.exists()){
-                        for (File replay: cloudReplayFolder.listFiles()) {
-                            if(replay.isFile() && replay.canRead() && replay.getName().contains(".rpl3"))
-                                addRow(new Object[]{replay.getName(),new Date(replay.lastModified()),true,replay});
+            for (File userFolder : userDataFolder.listFiles()) {
+                if(userFolder.isDirectory()){
+                    File cloudReplayFolder = new File(userFolder,"919640\\remote");
+                    if(cloudReplayFolder.isDirectory() && cloudReplayFolder.exists()) {
+                        for (File replay : cloudReplayFolder.listFiles()) {
+                            if (replay.isFile() && replay.canRead() && replay.getName().contains(".rpl3"))
+                                addRow(new Object[]{replay.getName(), new Date(replay.lastModified()), true, replay});
                         }
-                    } else {
-                        throw new Exception("SD44 cloud data not found.\n\"cloud\" replays will not be availible");
                     }
-
                 }
             }
         } else {

@@ -1,11 +1,9 @@
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.net.URL;
 import java.util.Base64;
 
 public class DetailsPanel extends JPanel {
@@ -20,29 +18,31 @@ public class DetailsPanel extends JPanel {
         removeAll();
         repaint();
 
-        add(new JLabel("ver: "+ details.ver));
-
-        if(details.gamemode >=3)
-        {
-            add(new JLabel("Not multiplayer replay"));
-            revalidate();
-            return;
-        }
-
-
-        JLabel label = new JLabel("Map: "+details.mapname);
+        JLabel label = new JLabel("Server name: " + details.servername);
         label.setAlignmentX(Component.LEFT_ALIGNMENT);
         add(label);
-        label = new JLabel("Mode: "+ details.gamemode );
+        label = new JLabel("Map: " + details.mapname);
         label.setAlignmentX(Component.LEFT_ALIGNMENT);
         add(label);
-        label = new JLabel("Victory: " + details.victory);
+        label = new JLabel("Mode: "+ Constants.gameModes[details.gamemode] );
+        label.setAlignmentX(Component.LEFT_ALIGNMENT);
+        add(label);
+        label = new JLabel("Start points: " + details.startmoney);
+        label.setAlignmentX(Component.LEFT_ALIGNMENT);
+        add(label);
+        label = new JLabel("Income rate: " + details.income);
+        label.setAlignmentX(LEFT_ALIGNMENT);
+        add(label);
+        label = new JLabel("Score limit: " + Constants.scoreLimit.get(details.scorelimit) + "("+details.scorelimit+")");
+        label.setAlignmentX(LEFT_ALIGNMENT);
+        add(label);
+        label = new JLabel("Time limit: " + details.timelimit);
+        label.setAlignmentX(LEFT_ALIGNMENT);
+        add(label);
+        label = new JLabel("Victory: " + Constants.victoryType[details.victory]);
         label.setAlignmentX(Component.LEFT_ALIGNMENT);
         add(label);
         label = new JLabel("Duration: " + details.duration);
-        label.setAlignmentX(LEFT_ALIGNMENT);
-        add(label);
-        label = new JLabel("Score: " + details.score);
         label.setAlignmentX(LEFT_ALIGNMENT);
         add(label);
 
@@ -71,36 +71,23 @@ public class DetailsPanel extends JPanel {
             });
 
             byte[] deckByte;
-            deckByte = Base64.getDecoder().decode(pl.deck.charAt(0)=='*'?pl.deck.substring(1,4):pl.deck.substring(0,3));
-            String deckString ;
-            deckString = String.format("%8s",Integer.toBinaryString(deckByte[0] & 0XFF)).replace(' ','0');
-            deckString += String.format("%8s",Integer.toBinaryString(deckByte[1] & 0XFF)).replace(' ','0');
-            if(pl.deck.charAt(0) == '*'){
-                pl.division = Integer.parseInt(deckString.substring(0,10),2);
-            } else
-            {
-                pl.division = Integer.parseInt(deckString.substring(0,8),2);
+            deckByte = Base64.getDecoder().decode(pl.deck);
+            String deckString = "";
+            for(int i = 0; i<deckByte.length;i++){
+                deckString += String.format("%8s",Integer.toBinaryString(deckByte[i] & 0XFF)).replace(' ','0');
             }
-
-
-
+            int[] header = new int[5];
+            for(int i=0;i<5;i++){
+                int count = Integer.parseInt(deckString.substring(0,5),2);
+                header[i] = Integer.parseInt(deckString.substring(5,5+count),2);
+                deckString = deckString.substring(5+count);
+            }
 
             playerPanel.add(new JLabel(pl.nickname));
 
             playerPanel.add(Box.createHorizontalGlue());
-            try {
-                URL image = getClass().getResource("/res/"+ pl.division.toString() +".png");
-                if(image != null) {
-                    JLabel divIcon = new JLabel(new ImageIcon(ImageIO.read(image)));
-                    divIcon.setToolTipText(pl.division.toString());
-                    playerPanel.add(divIcon);
-                } else {
-                    playerPanel.add(new JLabel());
-                }
-            } catch (Exception ex){
-                ex.printStackTrace();
-
-            }
+            playerPanel.add(new JLabel(Constants.divisions.get(header[2])+"("+Constants.incomeTypes[header[4]]+")"));
+            playerPanel.add(new JLabel());
             playerPanel.add(Box.createRigidArea(new Dimension(10,10)));
             playerPanel.add(button);
             playerPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -112,6 +99,9 @@ public class DetailsPanel extends JPanel {
             }
 
         }
+
+        add(new JLabel("ver: "+ details.ver));
+
         revalidate();
 
     }

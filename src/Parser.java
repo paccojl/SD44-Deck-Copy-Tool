@@ -5,9 +5,13 @@ import org.json.simple.parser.ParseException;
 import java.io.*;
 import java.util.Collections;
 import java.util.LinkedList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 public class Parser {
+
+    static final Pattern mapName = Pattern.compile("_\\dx\\d_(.+)_LD_(\\dv\\d)",Pattern.MULTILINE);
 
     public static Details Parse(File replay) throws ParseException,IOException {
 
@@ -36,16 +40,38 @@ public class Parser {
         result = (JSONObject) result.get("result");
 
         if(game.containsKey("Map")){
-            returnDetails.mapname = (String) game.get("Map");
+            String fullMapname = (String) game.get("Map");
+            Matcher m = mapName.matcher(fullMapname);
+            if(m.find()){
+                returnDetails.mapname = Constants.maps.get(m.group(1))+" "+m.group(2);
+            }
+
         }
         if(game.containsKey("NbMaxPlayer")){
             returnDetails.maxPlayers = Integer.parseInt((String) game.get("NbMaxPlayer"));
         }
-        if(game.containsKey("GameMode")){
-            returnDetails.gamemode = Integer.parseInt((String) game.get("GameMode"));
+        if(game.containsKey("VictoryCond")){
+            returnDetails.gamemode = Integer.parseInt((String) game.get("VictoryCond"));
         }
         if(game.containsKey("Version")){
             returnDetails.ver = Integer.parseInt((String) game.get("Version")) %100000;
+        }
+        if(game.containsKey("ServerName")){
+            returnDetails.servername = (String) game.get("ServerName");
+        } else
+            returnDetails.servername = "";
+        if(game.containsKey("InitMoney")){
+            returnDetails.startmoney = Integer.parseInt((String) game.get("InitMoney"));
+        }
+        if(game.containsKey("IncomeRate")){
+            returnDetails.income = Constants.incomeRates[Integer.parseInt((String) game.get("IncomeRate"))];
+        }
+        if(game.containsKey("ScoreLimit")){
+            returnDetails.scorelimit = Integer.parseInt((String) game.get("ScoreLimit"));
+        }
+        if(game.containsKey("TimeLimit")){
+            int time = Integer.parseInt((String) game.get("TimeLimit"));
+            returnDetails.timelimit = time==0?"No Limit":String.format("%02d:%02d",((time%3600) / 60), (time % 60));
         }
 
         returnDetails.players = new LinkedList<>();
@@ -65,9 +91,6 @@ public class Parser {
             }
         }
 
-        if(result.containsKey("Score")){
-            returnDetails.score = Integer.parseInt((String) result.get("Score"));
-        }
         if(result.containsKey("Duration")) {
             int time = Integer.parseInt((String) result.get("Duration"));
             returnDetails.duration = String.format("%02d:%02d:%02d",(time/3600), ((time%3600) / 60), (time % 60));

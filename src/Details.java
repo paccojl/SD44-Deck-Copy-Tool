@@ -11,4 +11,9 @@ public class Details {
     Integer score;
 
     LinkedList<Player> players;
+    String servername;
+    int startmoney;
+    String income;
+    String timelimit;
+    int scorelimit;
 }
