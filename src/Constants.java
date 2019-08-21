@@ -45,6 +45,7 @@ public class Constants {
         maps.put("Marecages_Naratch_lake","Naratch Lake");
         maps.put("Rivers_Pleshchenitsy_S","Pleshchenitsy South");
         maps.put("Bridges_Smolyany","Smolyany");
+        maps.put("Siedlce", "Siedlce");
 
         divisions = new TreeMap<>();
         divisions.put(132,"2-ya Gvard. Tankovy Korpus");
@@ -75,5 +76,7 @@ public class Constants {
         divisions.put(139,"Korück 559");
         divisions.put(140,"1. Lovas");
         divisions.put(141,"12. Tartalék");
+        divisions.put(270,"84-ya Gvard. Strelkovy");
+        divisions.put(269, "25. Panzergrenadier");
     }
 }
