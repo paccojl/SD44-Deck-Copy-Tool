@@ -1,10 +1,15 @@
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.*;
+import java.util.*;
+import java.util.List;
 import java.util.prefs.Preferences;
 
 public class Main {
@@ -40,8 +45,21 @@ public class Main {
                 prefs.put("steam home",steamHome.toString());//Save steam home in prefs so user dont need to find it again
             }
         }
+
+        java.util.List<File> cloudFolders = new ArrayList<>(2);
         try {
-            replaysTableModel.fill(steamHome); //find replays
+            replaysTableModel.fill(new File(System.getProperty("user.home") + "\\Saved Games\\EugenSystems\\SteelDivision2"),false);
+            File userdata = new File(steamHome,"userdata");
+            if(userdata.exists() && userdata.isDirectory()){
+                for (File currentUserdata : userdata.listFiles()) {
+                    File sd2remoteFolder = new File(currentUserdata,"919640\\remote");
+                    if(sd2remoteFolder.exists() && sd2remoteFolder.isDirectory()){
+                        if(replaysTableModel.fill(sd2remoteFolder,true)){
+                            cloudFolders.add(sd2remoteFolder);
+                        }
+                    }
+                }
+            }
         } catch (Exception e)
         {
             if(e.getMessage().contains("cloud")){
@@ -66,15 +84,54 @@ public class Main {
                 }
             }
         });
+        JButton openLocalButton = new JButton("Open local folder");
+        openLocalButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {try {
+                    Desktop.getDesktop().open(new File(System.getProperty("user.home") + "\\Saved Games\\EugenSystems\\SteelDivision2"));
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+            }
+        });
+        List<JButton> cloudButtons = new ArrayList<>(2);
+        for (File cloudFolder : cloudFolders) {
+            JButton button = new JButton("Open cloud folder");
+            button.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    try {
+                        Desktop.getDesktop().open(cloudFolder);
+                    } catch (IOException e1) {
+                        e1.printStackTrace();
+                    }
+                }
+            });
+            cloudButtons.add(button);
+        }
+
 
         //Main frame setup
-        frame.setTitle("SD44 Deck Copy Tool");
+        frame.setTitle("SD2 Deck Copy Tool");
         frame.setSize(prefs.getInt("window width",1000),prefs.getInt("window height",500));
         frame.setResizable(true);
         frame.setLocation(prefs.getInt("window pos x",100), prefs.getInt("window pos y",300));
-        frame.setLayout(new GridLayout());
-        frame.add(new JScrollPane(replaysTable));
-        frame.add(new JScrollPane(detailsPanel));
+        frame.setLayout(new BorderLayout());
+        JPanel commandPane = new JPanel();
+        commandPane.setLayout(new BoxLayout(commandPane,BoxLayout.LINE_AXIS));
+        commandPane.add(openLocalButton);
+        for (JButton cloudButton : cloudButtons) {
+            commandPane.add(cloudButton);
+        }
+        commandPane.add(Box.createRigidArea(new Dimension(10,0)));
+        commandPane.setBorder(new EmptyBorder(2,5,2,5));
+        commandPane.add(Box.createHorizontalGlue());
+        frame.add(commandPane, BorderLayout.NORTH);
+        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+        splitPane.setResizeWeight(0.0);
+        splitPane.add(new JScrollPane(replaysTable));
+        splitPane.add(new JScrollPane(detailsPanel));
+        frame.add(splitPane);
         frame.setVisible(true);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 

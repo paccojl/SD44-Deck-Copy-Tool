@@ -46,6 +46,9 @@ public class Constants {
         maps.put("Rivers_Pleshchenitsy_S","Pleshchenitsy South");
         maps.put("Bridges_Smolyany","Smolyany");
         maps.put("Siedlce", "Siedlce");
+        maps.put("Zbuczyn", "Zbuczy");
+        maps.put("Vistula_Gora_Kalwaria","Gora Kalwaria");
+        maps.put("West_Brest", "Brest West");
 
         divisions = new TreeMap<>();
         divisions.put(132,"2-ya Gvard. Tankovy Korpus");
@@ -78,5 +81,9 @@ public class Constants {
         divisions.put(141,"12. Tartalék");
         divisions.put(270,"84-ya Gvard. Strelkovy");
         divisions.put(269, "25. Panzergrenadier");
+        divisions.put(262, "5. SS-Panzer \"Wiking\"");
+        divisions.put(263, "Fallschirm-Panzer \"Hermann Göring\"");
+        divisions.put(255, "1 Piechoty \"Tadeusza Kościuszki\"");
+        divisions.put(261, "Armia Krajowa");
     }
 }

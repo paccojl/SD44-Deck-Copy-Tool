@@ -11,39 +11,49 @@ import java.util.regex.Pattern;
 
 public class Parser {
 
-    static final Pattern mapName = Pattern.compile("_\\dx\\d_(.+)_LD_(\\dv\\d)",Pattern.MULTILINE);
+    static final Pattern mapName = Pattern.compile("_\\dx\\d_(.+)_LD(_(\\dv\\d))?",Pattern.MULTILINE);
+
+    private static String findJSONBlock(String line, int blockStart) throws IOException {
+        int i = blockStart;
+        StringBuilder sb = new StringBuilder();
+        int counter = 0;
+        for(;i<line.length();i++){
+            char c = line.charAt(i);
+            if(c =='{') counter++;
+            if(c =='}') counter--;
+            sb.append(c);
+            if(counter==0) break;
+        }
+        return sb.toString();
+    }
 
     public static Details Parse(File replay) throws ParseException,IOException {
 
         Details returnDetails = new Details();
         BufferedReader buff = new BufferedReader(new InputStreamReader(new FileInputStream(replay),"UTF8"),5000);
-        String firstBlock;
-        String secondBlock;
-        String str="";
-        try {
-            while (!str.contains("{\"game\":{\""))
-                str = buff.readLine();
-            firstBlock = str.substring(str.indexOf("{\"game\":{\""),str.indexOf("}}")+2);
-            while (!str.contains("{\"result\":"))
-                str = buff.readLine();
-            secondBlock = str.substring(str.indexOf("{\"result\":{"),str.indexOf("}}")+2);
-        } catch (IOException e){
-            throw e;
-        } finally {
-            buff.close();
+
+        String line;
+        int index;
+        do{
+            line = buff.readLine();
+        } while ((index = line.indexOf("{\"game\":")) == -1);
+
+        JSONObject full = (JSONObject) new JSONParser().parse(findJSONBlock(line,index));
+
+        while ((index = line.indexOf("{\"result\":")) == -1){
+            line = buff.readLine();
         }
 
-        JSONObject full = (JSONObject) new JSONParser().parse(firstBlock);
+        JSONObject result = (JSONObject) ((JSONObject) new JSONParser().parse(findJSONBlock(line,index))).get("result");
+
         JSONObject game = (JSONObject) full.get("game");
 
-        JSONObject result = (JSONObject) new JSONParser().parse(secondBlock);
-        result = (JSONObject) result.get("result");
 
         if(game.containsKey("Map")){
             String fullMapname = (String) game.get("Map");
             Matcher m = mapName.matcher(fullMapname);
             if(m.find()){
-                returnDetails.mapname = Constants.maps.get(m.group(1))+" "+m.group(2);
+                returnDetails.mapname = Constants.maps.get(m.group(1))+" "+m.group(3);
             }
 
         }

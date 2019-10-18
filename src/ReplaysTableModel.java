@@ -26,8 +26,17 @@ public class ReplaysTableModel extends DefaultTableModel {
     /**
      * Filling table with replays
      */
-    public void fill (File steamHome) throws Exception{
+    public boolean fill (File folder, boolean isCloud) throws Exception{
+        boolean foundSome=false;
+        for (File file : folder.listFiles()) {
+            if(file.isFile() && file.canRead() && file.getName().endsWith(".rpl3")){
+                addRow(new Object[]{file.getName(), new Date(file.lastModified()), isCloud, file});
+                foundSome = true;
+            }
+        }
+        return foundSome;
 
+    /*
         String path = System.getProperty("user.home") + "\\Saved Games\\EugenSystems\\SteelDivision2";
         File localReplayFolder = new File(path);
 
@@ -64,10 +73,7 @@ public class ReplaysTableModel extends DefaultTableModel {
         } else {
             throw new Exception("Steam userdata folder not found.\n\"cloud\" replays will not be availible");
         }
-
-
-
-
+*/
     }
 
 }
